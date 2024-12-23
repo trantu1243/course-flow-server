@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  key_manager:
+    build:
+      context: ./key-manager
+      dockerfile: Dockerfile
+    container_name: key_manager
+    ports:
+      - "8008:8008"
+    volumes:
+       - ./key-manager:/usr/src/key-manager
+       - /usr/src/key-manager/node_modules
+    networks:
+      - course_network
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: server
+    environment:
+      DB_URL: mongodb+srv://tuananhkqtt:f9xp9BnuNJ7sHwPr@cluster0.eadwu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    ports:
+      - "8000:8000"
+    depends_on:
+      - key_manager
+    volumes:
+      - ./server:/usr/src/server
+      - /usr/src/server/node_modules
+    networks:
+      - course_network
+networks:
+  course_network:
+    driver: bridge
